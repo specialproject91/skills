@@ -43,6 +43,39 @@ memory, secrets - so the two are interchangeable.
   drive them with tmux by absolute path (see the
   `remote-codex-over-tailscale` skill).
 
+## Sharing only your skills: a catalog repo, not a full mirror
+
+A full mirror is heavy-handed. When the goal is just "the other machine should
+have my skills", publish a **catalog**: a GitHub repo laid out as a Hermes tap
+(`skills/<name>/SKILL.md`) holding only the non-bundled and user-modified skills
+(`hermes skills list-modified`). Leave stock bundled skills out - the other
+machine ships them already, and duplicating them freezes them against upstream
+updates. Record each skill's category (its parent directory) alongside the files
+so a consumer can file it back identically; `hermes skills list` takes the
+category from the directory, not from the frontmatter.
+
+- `hermes skills tap add owner/repo` subscribes (path defaults to `skills/`;
+  non-default layouts need an edit to `~/.hermes/skills/.hub/taps.json`).
+- **`hermes skills install` from a tap is usually blocked, by design.** New taps
+  get `community` trust, and the Skills Guard scores any skill that documents SSH
+  keys, `sudo`, or `~/.hermes` paths as `dangerous` (`ssh_keygen`, `ssh_backdoor`,
+  `sudo_usage`, `hermes_config_ref`, ...). A dangerous verdict on a community or
+  trusted source is **unoverridable** - `--force` will not do it and there is no
+  user-side trust knob (only a Hermes core PR adding the repo to
+  `TRUSTED_REPOS` in `tools/skills_guard.py`). Tap + `inspect` still work.
+  Do not go looking for a bypass: a skill that trips these rules is exactly the
+  kind a scanner should refuse.
+- On your own machines, skip the hub. Either copy the catalog's files straight
+  into `~/.hermes/skills/` (back up whatever you replace), or point
+  `skills.external_dirs` at a clone of the repo. Copying in is the variant that
+  works for **edited bundled** skills, because it lands them as `user-modified`
+  on the receiving machine, matching the sending one; `external_dirs` is
+  lower precedence than a same-named local skill, so it cannot deliver edits to
+  a bundled skill.
+- Consumers should pull before they publish: whichever machine made the edit is
+  the one that pushes, and an unconditional copy from the repo is how the two
+  stay in step.
+
 ## Notes
 
 - **Version drift is tolerated for data files:** a newer `config.yaml` (e.g.
