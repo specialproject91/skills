@@ -108,6 +108,7 @@ Profiles use `~/.hermes/profiles/<name>/` with the same layout. When a profile i
 | Contributing code: adding tools, slash commands, tests | `references/contributor-guide.md` |
 | delegate_task "capped at N" reports | `references/delegate-task-concurrency-diagnosis.md` |
 | Clone/mirror a Hermes install onto another machine (config, skills, memory, secrets) | `references/mirroring-hermes-across-machines.md` |
+| Create persistent agent profiles (a named crew: research/writer/developer) | `references/profiles-as-agents.md` |
 | "Can app X use my Nous Portal subscription/OAuth?" | `references/portal-auth-for-third-party-apps.md` |
 | Connecting a messaging platform (Telegram, Discord, Slack, WhatsApp, …) | docs: `/user-guide/messaging` |
 
@@ -176,6 +177,15 @@ terminal(command="sleep 8 && tmux send-keys -t frontend 'Build React dashboard f
 terminal(command="tmux capture-pane -t backend -p | tail -30", timeout=5)
 terminal(command="tmux send-keys -t frontend 'Here is the API schema from the backend agent: ...' Enter", timeout=5)
 ```
+
+### Persistent Named Agents (profiles)
+
+For an agent that should *stay* — its own identity, config, sessions and memory — create a
+profile instead of spawning a process or delegating: `hermes profile create <name> --clone`,
+then copy `~/.hermes/auth.json` in (the clone omits it and the profile cannot answer
+without it), then write the identity to `~/.hermes/profiles/<name>/SOUL.md`, then verify with
+`hermes -p <name> chat -q "Who are you?"`. Full procedure and pitfalls:
+`references/profiles-as-agents.md`.
 
 ### Session Resume
 
