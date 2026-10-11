@@ -173,9 +173,50 @@ ssh -i KEY <user>@<ip> '/opt/homebrew/bin/gh auth setup-git -h github.com'   # c
 PATH). Inspect `hosts.yml` with `sed -E 's/(oauth_token:).*/\1 [REDACTED]/'` -
 when the token lives in the keyring the file has no token line to redact.
 
+### 6. Running several agents at once under named roles
+
+To give a job to a *named* agent rather than an anonymous prompt, keep role
+definitions in `agents/<role>.md` in the repo and register them as Codex roles
+(`agents/<role>.toml` -> `~/.codex/agents/`, plus `[agents.<role>]` with
+`config_file` in `~/.codex/config.toml`). **Leave `model` out of a role file** -
+the three roles shipped on this machine pin `gpt-5.5`, and a pinned slug that
+gets retired fails the role with a confusing error; the role should inherit the
+session model.
+
+Dispatch = role file concatenated with the task brief, one worktree and one tmux
+session per agent, so parallel agents cannot touch each other's files:
+
+```
+cat agents/researcher.md jobA.md > ~/work/role-taskA.md
+git -C ~/codex-and-hermes worktree add ~/work/<task> -b <branch>
+tmux new-session -d -s <role> -x 200 -y 50 \
+  'cd ~/work/<task> && script -q ~/work/<task>.out \
+     codex exec --sandbox workspace-write "$(cat ~/work/role-taskA.md)"; echo EXIT:$? >> ~/work/<task>.done'
+```
+
+- `script -q <log> <cmd>` keeps the PTY these CLIs want while recording output;
+  a plain redirect to a file does not.
+- The `.done` marker (with the exit code) is what you watch for; poll
+  `capture-pane` meanwhile. Bound the wait - macOS has no `timeout`.
+- `--sandbox workspace-write` cannot write `.git`, so the agent leaves the tree
+  dirty: **you** commit/push/open the PR, and never trust its "committed" claim.
+- The sandbox may also lack a network path. A research run whose shell could not
+  resolve `api.github.com` / `hn.algolia.com` silently fell back to the connected
+  GitHub app's read-only tools plus web search - usable, but a thinner survey
+  than asked for. Read the report's method note to see which path it took.
+- Verify the artifacts yourself before merging: run the agent's tests, and check
+  its factual claims against the live API (`gh api repos/<owner>/<repo> --jq ...`)
+  rather than trusting the summary.
+
 ## Cloning a whole Hermes install to another machine
 
 Goal: make machine B's Hermes behave like A's (same settings, skills, memory).
+
+**Sharing only the skills is much lighter - prefer it when settings, memory and
+secrets do not need to travel:** publish a catalog repo (`skills/<name>/SKILL.md`)
+and copy it into the peer's profile. Full recipe, plus the Skills Guard catch
+that blocks hub installs of skills like these, is in the `hermes-agent` skill's
+mirroring-hermes-across-machines reference.
 
 ### What actually transfers
 

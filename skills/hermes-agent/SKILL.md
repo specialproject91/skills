@@ -107,7 +107,7 @@ Profiles use `~/.hermes/profiles/<name>/` with the same layout. When a profile i
 | Debugging: voice, tools missing, gateway, aux models | `references/troubleshooting.md` |
 | Contributing code: adding tools, slash commands, tests | `references/contributor-guide.md` |
 | delegate_task "capped at N" reports | `references/delegate-task-concurrency-diagnosis.md` |
-| Clone/mirror a Hermes install onto another machine (config, skills, memory, secrets) | `references/mirroring-hermes-across-machines.md` |
+| Clone/mirror a Hermes install onto another machine (config, skills, memory, secrets); or share *just* the skills between machines via a catalog/tap repo | `references/mirroring-hermes-across-machines.md` |
 | Create persistent agent profiles (a named crew: research/writer/developer) | `references/profiles-as-agents.md` |
 | "Can app X use my Nous Portal subscription/OAuth?" | `references/portal-auth-for-third-party-apps.md` |
 | Connecting a messaging platform (Telegram, Discord, Slack, WhatsApp, …) | docs: `/user-guide/messaging` |

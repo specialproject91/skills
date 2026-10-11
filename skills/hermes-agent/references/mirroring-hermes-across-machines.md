@@ -76,6 +76,21 @@ category from the directory, not from the frontmatter.
   the one that pushes, and an unconditional copy from the repo is how the two
   stay in step.
 
+### The catalog these machines actually use
+
+`specialproject91/skills`, cloned at `~/skills` on both the iMac and the laptop.
+`sync.sh` rebuilds `skills/` + `catalog.json` from `~/.hermes/skills` and pushes;
+`pull.sh` updates the checkout, then copies the catalog into the profile and
+backs up anything it replaces under `~/.hermes/skills-backups/<ts>/` (nothing in
+the profile is ever deleted). Publish on the machine that made the edit, pull on
+the other. `HERMES_SKILLS=<profile>/skills` retargets another profile.
+
+Verify a pull two ways, and do both: checksum each skill directory on both sides
+(`find <dir> -type f ! -name .DS_Store | sort | xargs md5 -q | md5 -q`) to prove
+the bytes arrived, then ask the receiving Hermes to name a catalog skill in
+`hermes chat --toolsets skills -q "<which skill covers ...>"` to prove the
+profile actually loads it.
+
 ## Notes
 
 - **Version drift is tolerated for data files:** a newer `config.yaml` (e.g.

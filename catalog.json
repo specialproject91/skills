@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T15:03:41+0100",
+  "generated_at": "2026-10-11T15:59:28+0100",
   "generated_on": "Wandas-iMac.local",
   "skills": {
     "codex": {
@@ -9,6 +9,10 @@
     "hermes-agent": {
       "category": "autonomous-ai-agents",
       "source": "modified-bundled"
+    },
+    "hermes-role-profiles": {
+      "category": "autonomous-ai-agents",
+      "source": "local"
     },
     "remote-codex-over-tailscale": {
       "category": "autonomous-ai-agents",
